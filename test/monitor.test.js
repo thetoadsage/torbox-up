@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { checkTorBox, Monitor } from "../src/monitor.js";
 
-const config = { apiKey: "secret", apiUrl: "https://example.test/me", timeoutMs: 100, ntfyUrl: "https://ntfy.test/topic", timeZone: "America/Chicago", failuresBeforeAlert: 2 };
+const config = { apiKey: "secret", apiUrl: "https://example.test/me", timeoutMs: 100, ntfyUrl: "https://ntfy.test/topic", timeZone: "America/Chicago", failuresBeforeAlert: 2, successesBeforeRecovery: 2 };
 
 test("a successful TorBox response is healthy", async () => {
   const result = await checkTorBox({ ...config, fetchFn: async () => new Response(JSON.stringify({ success: true }), { status: 200 }) });
@@ -14,7 +14,7 @@ test("authentication responses are classified as auth_failed", async () => {
   assert.equal(result.state, "auth_failed");
 });
 
-test("sends one outage alert across changing failures, then one recovery", async () => {
+test("sends one outage alert and recovers after consecutive successful checks", async () => {
   const results = [
     { state: "api_issue", message: "origin refused" },
     { state: "connection_issue", message: "timed out" },
@@ -33,6 +33,7 @@ test("sends one outage alert across changing failures, then one recovery", async
   await monitor.run();
   await monitor.run();
   await monitor.run();
+  assert.deepEqual(notices.map((notice) => notice.title), ["TorBox API issue"]);
   await monitor.run();
   await monitor.run();
   assert.deepEqual(notices.map((notice) => notice.title), ["TorBox API issue", "TorBox API recovered"]);

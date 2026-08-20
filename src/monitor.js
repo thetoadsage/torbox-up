@@ -72,16 +72,20 @@ export class Monitor {
     this.logger = logger;
     this.now = now;
     this.consecutiveFailures = 0;
+    this.consecutiveSuccesses = 0;
     this.outageAlerted = false;
   }
 
   async run() {
     const result = await this.check(this.config);
     if (result.state === "healthy") {
-      const recovered = this.outageAlerted;
+      this.consecutiveSuccesses += 1;
       this.consecutiveFailures = 0;
       this.logger.log(`[healthy] ${result.message}`);
-      if (recovered) {
+      if (
+        this.outageAlerted
+        && this.consecutiveSuccesses >= this.config.successesBeforeRecovery
+      ) {
         await this.#notify("TorBox API recovered", result.message, "default");
         this.outageAlerted = false;
       }
@@ -89,6 +93,7 @@ export class Monitor {
     }
 
     this.consecutiveFailures += 1;
+    this.consecutiveSuccesses = 0;
     this.logger.error(`[${result.state}] ${result.message}`);
     if (this.consecutiveFailures >= this.config.failuresBeforeAlert && !this.outageAlerted) {
       await this.#notify("TorBox API issue", result.message);

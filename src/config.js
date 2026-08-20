@@ -33,5 +33,10 @@ export function loadConfig(env = process.env) {
       "FAILURES_BEFORE_ALERT",
       2,
     ),
+    successesBeforeRecovery: positiveInteger(
+      env.SUCCESSES_BEFORE_RECOVERY,
+      "SUCCESSES_BEFORE_RECOVERY",
+      2,
+    ),
   };
 }
