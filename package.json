@@ -1,0 +1,14 @@
+{
+  "name": "torbox-up",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A small TorBox API-key health monitor with ntfy alerts.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

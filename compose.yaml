@@ -1,0 +1,6 @@
+services:
+  torbox-up:
+    build: .
+    container_name: torbox-up
+    restart: unless-stopped
+    env_file: .env
