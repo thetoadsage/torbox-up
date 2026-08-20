@@ -1,5 +1,5 @@
 {
-  "name": "torbox-up",
+  "name": "tb-up",
   "version": "1.0.0",
   "private": true,
   "description": "A small TorBox API-key health monitor with ntfy alerts.",

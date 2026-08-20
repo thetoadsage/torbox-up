@@ -1,7 +1,7 @@
 services:
-  torbox-up:
-    image: ghcr.io/thetoadsage/torbox-up:stable
+  tb-up:
+    image: ghcr.io/thetoadsage/tb-up:stable
     pull_policy: always
-    container_name: torbox-up
+    container_name: tb-up
     restart: unless-stopped
     env_file: .env

@@ -1,4 +1,4 @@
-# TorBox Up
+# tb-up
 
 A tiny monitor for the TorBox API key you actually use. It checks `GET /v1/api/user/me` every two minutes and posts to [ntfy](https://ntfy.sh) only when the API state changes.
 
@@ -44,8 +44,8 @@ Run tests with `npm test`.
 
 Each push to the deployment branch publishes a multi-architecture image to GitHub Container Registry:
 
-- `ghcr.io/thetoadsage/torbox-up:stable`
-- `ghcr.io/thetoadsage/torbox-up:sha-<commit>`
+- `ghcr.io/thetoadsage/tb-up:stable`
+- `ghcr.io/thetoadsage/tb-up:sha-<commit>`
 
 To update a server to the latest tested image:
 

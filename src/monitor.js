@@ -14,7 +14,7 @@ export async function checkTorBox({ apiKey, apiUrl, timeoutMs, fetchFn = fetch }
       signal: controller.signal,
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        "User-Agent": "TorBoxUp/1.0.0",
+        "User-Agent": "TbUp/1.0.0",
         Accept: "application/json",
       },
     });
