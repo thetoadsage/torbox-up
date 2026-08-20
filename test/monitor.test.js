@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { checkTorBox, Monitor } from "../src/monitor.js";
 
-const config = { apiKey: "secret", apiUrl: "https://example.test/me", timeoutMs: 100, ntfyUrl: "https://ntfy.test/topic", failuresBeforeAlert: 2 };
+const config = { apiKey: "secret", apiUrl: "https://example.test/me", timeoutMs: 100, ntfyUrl: "https://ntfy.test/topic", timeZone: "America/Chicago", failuresBeforeAlert: 2 };
 
 test("a successful TorBox response is healthy", async () => {
   const result = await checkTorBox({ ...config, fetchFn: async () => new Response(JSON.stringify({ success: true }), { status: 200 }) });
@@ -28,6 +28,7 @@ test("sends one outage alert across changing failures, then one recovery", async
     check: async () => results.shift(),
     notify: async (notice) => notices.push(notice),
     logger: { log() {}, error() {} },
+    now: () => new Date("2026-08-20T12:34:56.000Z"),
   });
   await monitor.run();
   await monitor.run();
@@ -35,4 +36,5 @@ test("sends one outage alert across changing failures, then one recovery", async
   await monitor.run();
   await monitor.run();
   assert.deepEqual(notices.map((notice) => notice.title), ["TorBox API issue", "TorBox API recovered"]);
+  assert.ok(notices.every((notice) => notice.message.startsWith("Time (America/Chicago): 2026-08-20 07:34:56 CDT\n\n")));
 });

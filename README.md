@@ -26,6 +26,8 @@ A tiny monitor for the TorBox API key you actually use. It checks `GET /v1/api/u
 
 The first alert is held until `FAILURES_BEFORE_ALERT` consecutive failed checks (default: 2). All failed states are treated as one outage, so a single outage notification is sent until the service becomes healthy again; then a single recovery notification is sent.
 
+Each ntfy alert includes a local timestamp in the notification body. Set `TIME_ZONE` to an IANA time zone such as `America/Chicago` in `.env`; it defaults to `UTC`.
+
 ## Run without Docker
 
 Node 22 or later has all required dependencies built in:

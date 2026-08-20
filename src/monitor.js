@@ -47,12 +47,30 @@ export async function sendNtfy({ ntfyUrl, title, message, priority = "high", fet
   return true;
 }
 
+function formatTimestamp(date, timeZone) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+      timeZoneName: "short",
+    }).formatToParts(date).map(({ type, value }) => [type, value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second} ${parts.timeZoneName}`;
+}
+
 export class Monitor {
-  constructor({ config, check = checkTorBox, notify = sendNtfy, logger = console }) {
+  constructor({ config, check = checkTorBox, notify = sendNtfy, logger = console, now = () => new Date() }) {
     this.config = config;
     this.check = check;
     this.notify = notify;
     this.logger = logger;
+    this.now = now;
     this.consecutiveFailures = 0;
     this.outageAlerted = false;
   }
@@ -81,7 +99,14 @@ export class Monitor {
 
   async #notify(title, message, priority) {
     try {
-      await this.notify({ ntfyUrl: this.config.ntfyUrl, title, message, priority });
+      const timeZone = this.config.timeZone || "UTC";
+      const timestamp = formatTimestamp(this.now(), timeZone);
+      await this.notify({
+        ntfyUrl: this.config.ntfyUrl,
+        title,
+        message: `Time (${timeZone}): ${timestamp}\n\n${message}`,
+        priority,
+      });
     } catch (error) {
       this.logger.error(`[notification_issue] ${error.message}`);
     }
