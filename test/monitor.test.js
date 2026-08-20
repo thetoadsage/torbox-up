@@ -14,11 +14,13 @@ test("authentication responses are classified as auth_failed", async () => {
   assert.equal(result.state, "auth_failed");
 });
 
-test("only sends an alert after threshold and sends recovery", async () => {
+test("sends one outage alert across changing failures, then one recovery", async () => {
   const results = [
-    { state: "connection_issue", message: "offline" },
-    { state: "connection_issue", message: "offline" },
+    { state: "api_issue", message: "origin refused" },
+    { state: "connection_issue", message: "timed out" },
+    { state: "auth_failed", message: "verification unavailable" },
     { state: "healthy", message: "back" },
+    { state: "healthy", message: "still back" },
   ];
   const notices = [];
   const monitor = new Monitor({
@@ -27,6 +29,8 @@ test("only sends an alert after threshold and sends recovery", async () => {
     notify: async (notice) => notices.push(notice),
     logger: { log() {}, error() {} },
   });
+  await monitor.run();
+  await monitor.run();
   await monitor.run();
   await monitor.run();
   await monitor.run();

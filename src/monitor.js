@@ -53,32 +53,29 @@ export class Monitor {
     this.check = check;
     this.notify = notify;
     this.logger = logger;
-    this.lastState = "unknown";
-    this.lastNotifiedState = "unknown";
     this.consecutiveFailures = 0;
+    this.outageAlerted = false;
   }
 
   async run() {
     const result = await this.check(this.config);
     if (result.state === "healthy") {
-      const recovered = this.lastNotifiedState !== "healthy" && this.lastNotifiedState !== "unknown";
+      const recovered = this.outageAlerted;
       this.consecutiveFailures = 0;
-      this.lastState = "healthy";
       this.logger.log(`[healthy] ${result.message}`);
       if (recovered) {
         await this.#notify("TorBox API recovered", result.message, "default");
-        this.lastNotifiedState = "healthy";
+        this.outageAlerted = false;
       }
       return result;
     }
 
     this.consecutiveFailures += 1;
     this.logger.error(`[${result.state}] ${result.message}`);
-    if (this.consecutiveFailures >= this.config.failuresBeforeAlert && result.state !== this.lastNotifiedState) {
+    if (this.consecutiveFailures >= this.config.failuresBeforeAlert && !this.outageAlerted) {
       await this.#notify("TorBox API issue", result.message);
-      this.lastNotifiedState = result.state;
+      this.outageAlerted = true;
     }
-    this.lastState = result.state;
     return result;
   }
 

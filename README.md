@@ -24,7 +24,7 @@ A tiny monitor for the TorBox API key you actually use. It checks `GET /v1/api/u
 - `api_issue`: a malformed or otherwise unsuccessful API response.
 - `connection_issue`: timeout or network failure.
 
-The first alert is held until `FAILURES_BEFORE_ALERT` consecutive failed checks (default: 2). A single recovery notification is sent once the service becomes healthy again.
+The first alert is held until `FAILURES_BEFORE_ALERT` consecutive failed checks (default: 2). All failed states are treated as one outage, so a single outage notification is sent until the service becomes healthy again; then a single recovery notification is sent.
 
 ## Run without Docker
 
