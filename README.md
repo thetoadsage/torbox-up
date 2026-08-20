@@ -8,7 +8,7 @@ A tiny monitor for the TorBox API key you actually use. It checks `GET /v1/api/u
 2. Start it:
 
    ```sh
-   docker compose up -d --build
+   docker compose up -d
    ```
 
 3. Watch the first probe:
@@ -37,3 +37,19 @@ npm start
 ```
 
 Run tests with `npm test`.
+
+## Updates from GHCR
+
+Each push to the deployment branch publishes a multi-architecture image to GitHub Container Registry:
+
+- `ghcr.io/thetoadsage/torbox-up:stable`
+- `ghcr.io/thetoadsage/torbox-up:sha-<commit>`
+
+To update a server to the latest tested image:
+
+```sh
+docker compose pull
+docker compose up -d
+```
+
+The GHCR package must be public for anonymous pulls. After the first image publishes, open the package settings on GitHub and set its visibility to public. If you keep it private, log in to `ghcr.io` on the server with a GitHub token that has `read:packages` permission before running `docker compose pull`.
