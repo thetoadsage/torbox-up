@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - initial-torbox-monitor
+      - dev
 
 env:
   REGISTRY: ghcr.io
@@ -41,6 +42,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Select image channel
+        id: channel
+        run: echo "tag=$([ \"$GITHUB_REF_NAME\" = dev ] && echo dev || echo stable)" >> "$GITHUB_OUTPUT"
+
       - name: Build and publish image
         uses: docker/build-push-action@v6
         with:
@@ -48,5 +53,5 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:stable
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.channel.outputs.tag }}
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ github.sha }}

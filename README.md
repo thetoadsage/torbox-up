@@ -47,6 +47,7 @@ Run tests with `npm test`.
 Each push to the deployment branch publishes a multi-architecture image to GitHub Container Registry:
 
 - `ghcr.io/thetoadsage/tb-up:stable`
+- `ghcr.io/thetoadsage/tb-up:dev`
 - `ghcr.io/thetoadsage/tb-up:sha-<commit>`
 
 To update a server to the latest tested image:
@@ -55,5 +56,7 @@ To update a server to the latest tested image:
 docker compose pull
 docker compose up -d
 ```
+
+Pushes to `initial-torbox-monitor` update `:stable`; pushes to `dev` update `:dev`. To test the development image on a server, temporarily set `image: ghcr.io/thetoadsage/tb-up:dev` in `compose.yaml`, then run `docker compose pull && docker compose up -d`.
 
 The GHCR package must be public for anonymous pulls. After the first image publishes, open the package settings on GitHub and set its visibility to public. If you keep it private, log in to `ghcr.io` on the server with a GitHub token that has `read:packages` permission before running `docker compose pull`.
