@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { checkTorBox, Monitor } from "../src/monitor.js";
+import { checkPremiumize, checkTorBox, Monitor } from "../src/monitor.js";
 
 const config = { apiKey: "secret", apiUrl: "https://example.test/me", timeoutMs: 100, ntfyUrl: "https://ntfy.test/topic", timeZone: "America/Chicago", failuresBeforeAlert: 2, successesBeforeRecovery: 2 };
 
@@ -12,6 +12,13 @@ test("a successful TorBox response is healthy", async () => {
 test("authentication responses are classified as auth_failed", async () => {
   const result = await checkTorBox({ ...config, fetchFn: async () => new Response(JSON.stringify({ error: "BAD_TOKEN" }), { status: 401 }) });
   assert.equal(result.state, "auth_failed");
+});
+
+test("Premiumize health uses its JSON status envelope", async () => {
+  const healthy = await checkPremiumize({ ...config, fetchFn: async () => new Response(JSON.stringify({ status: "success" }), { status: 200 }) });
+  const invalidKey = await checkPremiumize({ ...config, fetchFn: async () => new Response(JSON.stringify({ status: "error", code: "authentication_failed", message: "Invalid API key" }), { status: 200 }) });
+  assert.equal(healthy.state, "healthy");
+  assert.equal(invalidKey.state, "auth_failed");
 });
 
 test("sends one outage alert and recovers after consecutive successful checks", async () => {

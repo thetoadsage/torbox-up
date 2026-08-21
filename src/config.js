@@ -24,6 +24,8 @@ export function loadConfig(env = process.env) {
   return {
     apiKey: env.TORBOX_API_KEY.trim(),
     apiUrl: env.TORBOX_API_URL || "https://api.torbox.app/v1/api/user/me",
+    premiumizeApiKey: env.PREMIUMIZE_API_KEY?.trim() || null,
+    premiumizeApiUrl: env.PREMIUMIZE_API_URL || "https://www.premiumize.me/api/account/info",
     ntfyUrl: env.NTFY_URL?.trim() || null,
     timeZone: timeZone(env.TIME_ZONE),
     intervalMs: positiveInteger(env.CHECK_INTERVAL_MS, "CHECK_INTERVAL_MS", 120000),
