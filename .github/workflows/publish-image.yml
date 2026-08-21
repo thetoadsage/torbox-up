@@ -44,7 +44,12 @@ jobs:
 
       - name: Select image channel
         id: channel
-        run: echo "tag=$([ \"$GITHUB_REF_NAME\" = dev ] && echo dev || echo stable)" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ "$GITHUB_REF_NAME" = "dev" ]; then
+            echo "tag=dev" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=stable" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build and publish image
         uses: docker/build-push-action@v6
